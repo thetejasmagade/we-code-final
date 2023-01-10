@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.2.0",
+    "monaco-editor": "^0.34.1",
+    "nuxt": "3.0.0",
+    "nuxt-monaco-editor": "^1.1.1"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.13.6",
+    "@pinia/nuxt": "^0.4.6",
+    "axios": "^1.2.2",
+    "pinia": "^2.0.28"
+  }
+}
