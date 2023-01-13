@@ -82,8 +82,7 @@ export default {
             socket.on('connect', () => {
                 console.log("connected", socket.id)
                 this.$router.push({
-                    // path: `/editors/java/${url_id}`
-                    path: `/editors/java/${url_id}`, params: {}
+                    path: `/editors/java/${url_id}`
                 })
             })
         },
