@@ -18,11 +18,18 @@
                 </div>
             </div>
             <nav :class="isOpen ? 'block' : 'hidden'" class="px-2 pt-2 pb-4 sm:flex sm:p-0">
+                <button v-if="!roomDataState.room_id" @click="createRoom()" type="button"
+                    class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center">Create
+                    Room</button>
+                <p @click="disconnectRoom()" title="Connected" class="cursor-pointer px-3 text-white"
+                    v-if="roomDataState.connectedWith">🟢{{ $route.params.id }}</p>
+                <p class="px-3 text-white" v-if="roomDataState.isAdmin">🔖{{ roomDataState.room_id }}</p>
                 <NuxtLink to="#"
                     class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">Home
                 </NuxtLink>
                 <NuxtLink to="#"
-                    class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">Community
+                    class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
+                    Community
                 </NuxtLink>
                 <NuxtLink to="#" class="block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600">Register
                 </NuxtLink>
@@ -47,6 +54,15 @@
 
 
 <script>
+import { io } from 'socket.io-client'
+import { mapWritableState } from 'pinia'
+import { roomStore } from '~/store/index'
+
+definePageMeta({
+    name: "java-room"
+})
+
+
 export default {
     name: 'NavbarComponent',
     data() {
@@ -54,6 +70,36 @@ export default {
             isOpen: false,
         }
     },
+    methods: {
+        createRoom() {
+            let url_id = (Math.random() + 1).toString(36).substring(2)
+            let room_id = (Math.random() + 1).toString(36).substring(7)
+            this.roomDataState.room_id = room_id
+            this.roomDataState.isAdmin = true
+            this.roomDataState.connectedWith = true
+
+            let socket = io('https://numerous-sideways-handball.glitch.me/')
+            socket.on('connect', () => {
+                console.log("connected", socket.id)
+                this.$router.push({
+                    // path: `/editors/java/${url_id}`
+                    path: `/editors/java/${url_id}`, params: {}
+                })
+            })
+        },
+        disconnectRoom() {
+            this.roomDataState.room_id = ``
+            this.roomDataState.isAdmin = false
+            this.roomDataState.connectedWith = false
+            this.$router.push('/')
+        }
+    },
+    computed: {
+        ...mapWritableState(roomStore, ['roomDataState'])
+    },
+    mounted() {
+
+    }
 }
 </script>
 

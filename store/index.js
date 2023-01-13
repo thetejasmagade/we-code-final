@@ -14,3 +14,15 @@ export const useEditorStore = defineStore('counter', {
   actions: {
   },
 })
+
+export const roomStore = defineStore('room', {
+  state: () => ({
+        roomDataState: {
+          room_id: '',
+          isAdmin: false,
+          connectedWith: false
+        }
+  }),
+  actions: {
+  },
+})
