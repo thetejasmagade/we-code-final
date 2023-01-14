@@ -1,5 +1,5 @@
 <template>
-    <div v-if="roomDataState.room_id && $route.params.id.length == 10"
+    <div v-if="roomDataState.room_id && ($route.params.id.length == 10 || $route.params.id.length == 11)"
         class="grid grid-cols-2 divide-x h-screen bg-gray-900 text-gray-200">
         <div class="overflow-y-auto h-full">
             <!-- Black Bar for Editor -->
@@ -76,12 +76,13 @@
         </div>
     </div>
 
-    <div v-else-if="$route.params.id.length != 10">
+    <div v-else-if="$route.params.id.length < 10">
         Invalid Route
     </div>
 
     <div v-else>
         <input type="text" v-model="room_id">
+        <input type="text" v-model="name">
         <button type="button" @click="joinRoom(); roomDataState.room_id = room_id">VERIFY</button>
     </div>
     <!-- 
@@ -97,7 +98,7 @@
 import { mapWritableState } from 'pinia'
 import { roomStore } from '~/store/index'
 import { io } from 'socket.io-client'
-const socket = io('https://numerous-sideways-handball.glitch.me/')
+const socket = io('http://localhost:4000/')
 
 
 export default {
@@ -115,7 +116,8 @@ export default {
             output: ``,
             isLoading: false,
             socket_id: socket.id,
-            room_id: ``
+            room_id: ``,
+            name: ''
         }
     },
 
@@ -141,25 +143,29 @@ export default {
         },
 
         joinRoom() {
-            this.roomDataState.isAdmin = false
-            socket.emit("join-room", this.room_id, this.$route.params.id, message => {
-                console.log(message)
-                if (message) {
-                    this.roomDataState.connectedWith = true
-                }
-            })
-            this.receiveCodeToSocket()
+            if (this.roomDataState.isAdmin == false) {
+                socket.emit("join-room", this.room_id, this.name, this.$route.params.id, message => {
+                    console.log(message)
+                    if (message) {
+                        this.roomDataState.connectedWith = true
+                    }
+                })
+                this.receiveCodeToSocket()
+            }
         }
 
     },
 
     mounted() {
         this.receiveCodeToSocket()
-        socket.emit("join-room", this.roomDataState.room_id, this.$route.params.id, message => {
-            if (this.roomDataState.isAdmin) {
-                console.log(message)
-            }
+        socket.emit("join-room", this.roomDataState.room_id, "Tejas", this.$route.params.id, message => {
+            // if (this.roomDataState.isAdmin) {
+            console.log(message)
+            // }
         })
+        // if(this.roomDataState.isAdmin == true) {
+        //     this.joinRoom(this.roomDataState.isAdmin)
+        // }
     },
 
     computed: {

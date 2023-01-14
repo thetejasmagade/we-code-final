@@ -49,6 +49,7 @@
         </header>
         <div class="gradient-line"></div>
 
+        <BaseToast v-if="isToastOpen">{{ toastData }}</BaseToast>
     </div>
 </template>
 
@@ -68,6 +69,8 @@ export default {
     data() {
         return {
             isOpen: false,
+            isToastOpen: false,
+            toastData: ``
         }
     },
     methods: {
@@ -78,15 +81,19 @@ export default {
             this.roomDataState.isAdmin = true
             this.roomDataState.connectedWith = true
 
-            let socket = io('https://numerous-sideways-handball.glitch.me/')
+            let socket = io('http://localhost:4000/')
+
             socket.on('connect', () => {
-                console.log("connected", socket.id)
                 this.$router.push({
-                    path: `/editors/java/${url_id}`
+                    path: `/editors/java/${url_id}`, query: {admin: true}
                 })
             })
+            this.isToastOpen = true
+            this.toastData = "Private Room Created"
+
         },
         disconnectRoom() {
+            
             this.roomDataState.room_id = ``
             this.roomDataState.isAdmin = false
             this.roomDataState.connectedWith = false
