@@ -61,7 +61,6 @@ import { io } from 'socket.io-client'
 import { mapWritableState } from 'pinia'
 import { roomStore } from '~/store/index'
 
-let socket = io('http://localhost:4000/')
 
 definePageMeta({
     name: "java-room"
@@ -86,7 +85,7 @@ export default {
             this.roomDataState.isAdmin = true
             this.roomDataState.connectedWith = true
 
-            let socket = io('http://localhost:4000/')
+            let socket = io('https://numerous-sideways-handball.glitch.me')
 
             socket.on('connect', () => {
                 this.$router.push({
