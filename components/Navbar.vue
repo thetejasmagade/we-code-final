@@ -21,6 +21,8 @@
                 <button v-if="!roomDataState.room_id" @click="createRoom()" type="button"
                     class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center">Create
                     Room</button>
+                <a v-if="roomDataState.isAdmin" :href="'/connection?room_id=' + $route.params.id" target="_blank"
+                    class="text-white">GO TO</a>
                 <p @click="disconnectRoom()" title="Connected" class="cursor-pointer px-3 text-white"
                     v-if="roomDataState.connectedWith">🟢{{ $route.params.id }}</p>
                 <p class="px-3 text-white" v-if="roomDataState.isAdmin">🔖{{ roomDataState.room_id }}</p>
@@ -59,6 +61,8 @@ import { io } from 'socket.io-client'
 import { mapWritableState } from 'pinia'
 import { roomStore } from '~/store/index'
 
+let socket = io('http://localhost:4000/')
+
 definePageMeta({
     name: "java-room"
 })
@@ -70,7 +74,8 @@ export default {
         return {
             isOpen: false,
             isToastOpen: false,
-            toastData: ``
+            toastData: ``,
+            name: 'Tejas'
         }
     },
     methods: {
@@ -80,12 +85,12 @@ export default {
             this.roomDataState.room_id = room_id
             this.roomDataState.isAdmin = true
             this.roomDataState.connectedWith = true
-            
+
             let socket = io('http://localhost:4000/')
-            
+
             socket.on('connect', () => {
                 this.$router.push({
-                    path: `/editors/java/${url_id}`, query: {admin: true}
+                    path: `/editors/java/${url_id}`, query: { admin: true }
                 })
             })
 
@@ -94,7 +99,11 @@ export default {
 
         },
         disconnectRoom() {
-            leaveRoom(this.roomDataState.room_id, this.$route.params.id)
+            // leaveRoom(this.roomDataState.room_id, this.$route.params.id)
+            // let socket = io('http://localhost:4000/')
+            // socket.on('disconnected', ({ socket.id }));
+
+            this.$bus.$emit("disconnectRoom")
             this.roomDataState.room_id = ``
             this.roomDataState.isAdmin = false
             this.roomDataState.connectedWith = false

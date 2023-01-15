@@ -7,7 +7,7 @@
                 <div class="flex">
                     <div class="flex-1 w-64">
                         <!-- Dynamic File Name according to language -->
-                        <EditorFileName :lang="editorSettings.lang" />
+                        <EditorFileName lang="java" />
                     </div>
                     <div class="flex-1 w-32">
                         <span class="float-right pr-8">
@@ -23,8 +23,7 @@
             </div>
             <!-- Black Bar for Editor closes here -->
             <!-- Main Editor -->
-            <Editor :editorSettings="editorSettings" v-model="code" code="code"
-                @change-code-on-socket="sendCodeToSocket(); receiveCodeToSocket()" />
+            <Editor :editorSettings="editorSettings" v-model="code" code="code" @change-code-on-socket="updateCode()" />
             <!-- Main Editor Closed Here -->
         </div>
         <div class="h-screen">
@@ -64,7 +63,7 @@
             <div class="bg-black border-2">
                 <p class="text-lg px-2">
                     <span class="border-r-2 border-dashed">&nbsp;🔤 Input&nbsp;&nbsp;&nbsp;</span>
-                    <button
+                    <button @click="disconnectRoom()"
                         class="inline-block float-right mr-5 px-2 text-sm my-1 text-black bg-gray-300 rounded hover:bg-gray-500 hover:text-white">CLEAR</button>
                 </p>
             </div>
@@ -76,25 +75,18 @@
         </div>
     </div>
 
-    <div v-else-if="$route.params.id.length < 10">
+    <div v-else>
         Invalid Route
     </div>
 
-    <div v-else>
+    <!-- <div v-else>
         <input type="text" v-model="room_id">
         <input type="text" v-model="name">
-        <button type="button" @click="joinRoom(); roomDataState.room_id = room_id">VERIFY</button>
-    </div>
-    <!-- 
-    <div v-else>
-        Wrong Path
+        <button type="button" @click="roomDataState.room_id = room_id">VERIFY</button>
     </div> -->
-
 </template>
 
 <script>
-// import { mapWritableState } from 'pinia'
-// import { useCounterStore } from '~/store/index'
 import { mapWritableState } from 'pinia'
 import { roomStore } from '~/store/index'
 import { io } from 'socket.io-client'
@@ -120,7 +112,6 @@ export default {
             name: ''
         }
     },
-
     methods: {
         async sendCodeToRun() {
             this.isLoading = true
@@ -131,45 +122,45 @@ export default {
             this.isLoading = false
         },
 
-        sendCodeToSocket() {
-            socket.emit('send-code', this.code, this.room_id)
+        updateCode() {
+            socket.emit("send-code", this.code, this.roomDataState.room_id);
         },
 
-        receiveCodeToSocket() {
-            socket.on('receive-code', code => {
-                this.code = code
-            })
-        },
-
-        async joinRoom() {
-            if (this.roomDataState.isAdmin == false) {
-                this.receiveCodeToSocket()
-                let f = await joinSocketRoom(this.room_id, this.name, this.$route.params.id)
-                if (f.msg == ("Joined " + this.$route.params.id)) {
-                    this.roomDataState.connectedWith = true
-                }
-                this.receiveCodeToSocket()
-            }
+        disconnectRoom() {
+            socket.emit('leave', this.roomDataState.room_id, this.$route.params.id, (message) => {
+                console.log(message);
+            });
         }
-
     },
-
     mounted() {
-        this.receiveCodeToSocket()
-        socket.emit("join-room", this.roomDataState.room_id, "Tejas", this.$route.params.id, message => {
-            if (this.roomDataState.isAdmin) {
-                console.log(message)
+        this.roomDataState.connectedWith = false
+        socket.emit("join-room", this.roomDataState.room_id, this.roomDataState.name, this.$route.params.id, message => {
+            if (this.roomDataState.room_id) {
+                this.roomDataState.connectedWith = true
             }
-        })
-        this.receiveCodeToSocket()
-    },
+            console.log(socket.id)
+            console.log(message)
 
+            socket.on("receive-code", (code) => {
+                this.code = code;
+            });
+            // }
+        })
+
+        socket.on("receive-code", (code) => {
+            this.code = code;
+        });
+
+        this.$bus.$on("disconnectRoom", () => {
+            this.disconnectRoom()
+        })
+
+        setInterval(() => {
+            checkConnectedClients(this.roomDataState.room_id, this.$route.params.id)
+        }, 2000)
+    },
     computed: {
         ...mapWritableState(roomStore, ['roomDataState'])
     }
 }
 </script>
-
-<style>
-
-</style>

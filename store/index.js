@@ -19,6 +19,7 @@ export const roomStore = defineStore('room', {
   state: () => ({
         roomDataState: {
           room_id: '',
+          name: 'Tejas',
           isAdmin: false,
           connectedWith: false
         }
