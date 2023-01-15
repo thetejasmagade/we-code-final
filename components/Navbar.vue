@@ -74,26 +74,27 @@ export default {
         }
     },
     methods: {
-        createRoom() {
+        async createRoom() {
             let url_id = (Math.random() + 1).toString(36).substring(2)
             let room_id = (Math.random() + 1).toString(36).substring(7)
             this.roomDataState.room_id = room_id
             this.roomDataState.isAdmin = true
             this.roomDataState.connectedWith = true
-
+            
             let socket = io('http://localhost:4000/')
-
+            
             socket.on('connect', () => {
                 this.$router.push({
                     path: `/editors/java/${url_id}`, query: {admin: true}
                 })
             })
+
             this.isToastOpen = true
             this.toastData = "Private Room Created"
 
         },
         disconnectRoom() {
-            
+            leaveRoom(this.roomDataState.room_id, this.$route.params.id)
             this.roomDataState.room_id = ``
             this.roomDataState.isAdmin = false
             this.roomDataState.connectedWith = false

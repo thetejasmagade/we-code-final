@@ -137,19 +137,17 @@ export default {
 
         receiveCodeToSocket() {
             socket.on('receive-code', code => {
-                // console.log(code)
                 this.code = code
             })
         },
 
-        joinRoom() {
+        async joinRoom() {
             if (this.roomDataState.isAdmin == false) {
-                socket.emit("join-room", this.room_id, this.name, this.$route.params.id, message => {
-                    console.log(message)
-                    if (message) {
-                        this.roomDataState.connectedWith = true
-                    }
-                })
+                this.receiveCodeToSocket()
+                let f = await joinSocketRoom(this.room_id, this.name, this.$route.params.id)
+                if (f.msg == ("Joined " + this.$route.params.id)) {
+                    this.roomDataState.connectedWith = true
+                }
                 this.receiveCodeToSocket()
             }
         }
@@ -159,13 +157,11 @@ export default {
     mounted() {
         this.receiveCodeToSocket()
         socket.emit("join-room", this.roomDataState.room_id, "Tejas", this.$route.params.id, message => {
-            // if (this.roomDataState.isAdmin) {
-            console.log(message)
-            // }
+            if (this.roomDataState.isAdmin) {
+                console.log(message)
+            }
         })
-        // if(this.roomDataState.isAdmin == true) {
-        //     this.joinRoom(this.roomDataState.isAdmin)
-        // }
+        this.receiveCodeToSocket()
     },
 
     computed: {
