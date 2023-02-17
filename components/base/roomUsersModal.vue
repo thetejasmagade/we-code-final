@@ -1,0 +1,100 @@
+<template>
+    <button @:click="toggleModal()" data-modal-target="default" data-modal-toggle="defaultModal" type="button"
+        class="text-white bg-transparent from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center mr-5">Room
+        Joinies <span class="text-red-500">({{ data.length }})</span></button>
+
+    <div v-if="showModal"
+        class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
+        <div class="relative w-9/12 my-6 mx-auto max-w-9/12">
+            <!--content-->
+            <div
+                class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-gray-900 outline-none focus:outline-none">
+                <!--header-->
+                <div class="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                    <h3 class="text-2xl font-semibold text-white">
+                        Room Joinies 🧑‍🤝‍🧑
+                    </h3>
+                </div>
+                <!--body-->
+                <div class="relative p-6 flex-auto">
+                    <!-- <li>{{ addIcon }}</li> -->
+                    <div class="grid grid-cols-7 gap-4 text-center">
+                        <div v-for="(user, i) in data" :key="i"
+                            class="w-full max-w-[180px] max-h-[130px] border rounded-lg shadow bg-gray-800 border-gray-700 p-2">
+                            <div class="h-[80px] w-[80px] mx-auto">
+                                <img :src="addIcon">
+                            </div>
+                            <h2 class="text-white py-1">{{ user.user }} Magade</h2>
+                        </div>
+                    </div>
+
+                </div>
+                <!--footer-->
+                <div class="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                    <button
+                        class="background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 border-2"
+                        style="color: #00FF00" type="button" v-on:click="toggleModal()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div v-if="showModal" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+
+</template>
+
+<script>
+import { createAvatar } from '@dicebear/core';
+import { lorelei } from '@dicebear/collection';
+
+
+export default {
+    props: {
+        data: Array
+    },
+    data() {
+        return {
+            showModal: false
+        }
+    },
+    methods: {
+        toggleModal: function () {
+            this.showModal = !this.showModal;
+        },
+
+        // addIcon() {
+        //     const avatar = createAvatar(lorelei);
+        //     const svg = avatar.toString();
+        //     console.log(svg)
+        // }
+    },
+    computed: {
+        addIcon() {
+            // let updated = this.data.map()
+            for (let i = 0; i < this.data.length; i++) {
+                const avatar = createAvatar(lorelei, { seed: this.data[i].user, randomizeIds: false });
+                const svg = avatar.toDataUriSync();
+                return svg
+            }
+        }
+    },
+    mounted() {
+        // this.data.map(addIcon())
+    }
+}
+</script>
+
+<style>
+.setting-icon {
+    transition: width 2s, height 2s, transform 1s;
+}
+
+.setting-icon:hover {
+    transform: rotate(90deg);
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+</style>

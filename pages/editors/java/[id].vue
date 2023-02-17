@@ -109,7 +109,8 @@ export default {
             isLoading: false,
             socket_id: socket.id,
             room_id: ``,
-            name: ''
+            name: '',
+            roomUsers: ``
         }
     },
     methods: {
@@ -155,8 +156,15 @@ export default {
             this.disconnectRoom()
         })
 
+        // Callig connected Clients list
         setInterval(() => {
-            checkConnectedClients(this.roomDataState.room_id, this.$route.params.id)
+            // checkConnectedClients(this.roomDataState.room_id, this.$route.params.id)
+            socket.emit("check-clients", this.roomDataState.room_id, this.$route.params.id, (message) => {
+                console.log(message);
+                // this.roomUsers = message.clients
+                this.$bus.$emit("mittRoomUsers", message.clients)
+
+            })
         }, 2000)
     },
     computed: {

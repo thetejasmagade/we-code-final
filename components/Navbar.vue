@@ -21,6 +21,9 @@
                 <button v-if="!roomDataState.room_id" @click="createRoom()" type="button"
                     class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center">Create
                     Room</button>
+
+                <BaseRoomUsersModal :data="roomUsers" />
+
                 <a v-if="roomDataState.isAdmin" :href="'/connection?room_id=' + $route.params.id" target="_blank"
                     class="text-white">GO TO</a>
                 <p @click="disconnectRoom()" title="Connected" class="cursor-pointer px-3 text-white"
@@ -45,7 +48,7 @@
                     class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
                 </NuxtLink>
 
-                <BaseLanguage />
+                <!-- <BaseLanguage /> -->
 
             </nav>
         </header>
@@ -74,7 +77,8 @@ export default {
             isOpen: false,
             isToastOpen: false,
             toastData: ``,
-            name: 'Tejas'
+            name: 'Tejas',
+            roomUsers: ``
         }
     },
     methods: {
@@ -113,7 +117,10 @@ export default {
         ...mapWritableState(roomStore, ['roomDataState'])
     },
     mounted() {
-
+        this.$bus.$on("mittRoomUsers", (data) => {
+            // console.log(data)
+            this.roomUsers = data
+        })
     }
 }
 </script>
