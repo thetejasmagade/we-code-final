@@ -90,7 +90,7 @@
 import { mapWritableState } from 'pinia'
 import { roomStore } from '~/store/index'
 import { io } from 'socket.io-client'
-const socket = io('https://numerous-sideways-handball.glitch.me')
+const socket = io('https://numerous-sideways-handball.glitch.me/')
 
 
 export default {
@@ -135,7 +135,7 @@ export default {
     },
     mounted() {
         this.roomDataState.connectedWith = false
-        socket.emit("join-room", this.roomDataState.room_id, this.roomDataState.name, this.$route.params.id, message => {
+        socket.emit("join-room", this.roomDataState.room_id, this.roomDataState.name, this.roomDataState.userName, this.roomDataState.isAdmin, this.$route.params.id, message => {
             if (this.roomDataState.room_id) {
                 this.roomDataState.connectedWith = true
             }
@@ -154,6 +154,10 @@ export default {
 
         this.$bus.$on("disconnectRoom", () => {
             this.disconnectRoom()
+        })
+
+        this.$bus.$on("removeUser", () => {
+            socket.emit('removeUserFromRoom', { room: this.roomDataState.room_id, userName: this.roomDataState.userName });
         })
 
         // Callig connected Clients list

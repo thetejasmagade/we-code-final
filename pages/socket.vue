@@ -37,7 +37,7 @@ function demo() {
 
 <script>
 import { io } from 'socket.io-client'
-const socket = io('https://numerous-sideways-handball.glitch.me')
+const socket = io('https://numerous-sideways-handball.glitch.me/')
 
 export default {
     data() {

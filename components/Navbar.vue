@@ -89,7 +89,7 @@ export default {
             this.roomDataState.isAdmin = true
             this.roomDataState.connectedWith = true
 
-            let socket = io('https://numerous-sideways-handball.glitch.me')
+            let socket = io('http://localhost:4000/')
 
             socket.on('connect', () => {
                 this.$router.push({
@@ -98,7 +98,7 @@ export default {
             })
 
             this.isToastOpen = true
-            this.toastData = "Private Room Created"
+            // this.toastData = "Private Room Created"
 
         },
         disconnectRoom() {
@@ -108,6 +108,7 @@ export default {
 
             this.$bus.$emit("disconnectRoom")
             this.roomDataState.room_id = ``
+            this.roomDataState.userName = ''
             this.roomDataState.isAdmin = false
             this.roomDataState.connectedWith = false
             this.$router.push('/')

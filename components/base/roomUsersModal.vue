@@ -18,9 +18,24 @@
                 <!--body-->
                 <div class="relative p-6 flex-auto">
                     <!-- <li>{{ addIcon }}</li> -->
-                    <div class="grid grid-cols-7 gap-4 text-center">
+                    <div class="grid grid-cols-6 gap-4 text-center">
                         <div v-for="(user, i) in data" :key="i"
-                            class="w-full max-w-[180px] max-h-[130px] border rounded-lg shadow bg-gray-800 border-gray-700 p-2">
+                            class="w-full max-w-[180px] max-h-[130px] border rounded-lg shadow bg-gray-800 border-gray-700 p-2"
+                            style="position: relative;">
+
+                            <p v-if="!user.isAdmin"
+                                style="position: absolute; top: 0; right: 0; width: 50px; text-align:right; font-size: 14px; color: #00FF00;font-weight: 600;"
+                                class="pr-4">{{ roomDataState.isAdmin ? "You" : "Admin" }}</p>
+
+                            <svg v-if="user.isAdmin && roomDataState.isAdmin" @click="removeUser(user.user)"
+                                xmlns="http://www.w3.org/2000/svg" title="Free Web tutorials" width="24" height="24"
+                                class="pt-1 cursor-pointer"
+                                style="position: absolute; top: 0; right: 0; text-align:right; color: red;"
+                                viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm4 11H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1z" />
+                            </svg>
+
                             <div class="h-[80px] w-[80px] mx-auto">
                                 <img :src="addIcon">
                             </div>
@@ -41,12 +56,13 @@
         </div>
     </div>
     <div v-if="showModal" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
-
 </template>
 
 <script>
 import { createAvatar } from '@dicebear/core';
 import { lorelei } from '@dicebear/collection';
+import { mapState } from 'pinia'
+import { roomStore } from '~/store/index'
 
 
 export default {
@@ -59,9 +75,15 @@ export default {
         }
     },
     methods: {
-        toggleModal: function () {
+        toggleModal() {
             this.showModal = !this.showModal;
         },
+
+        removeUser(user) {
+            console.log(user)
+            this.$bus.$emit("disconnectRoom")
+        }
+
 
         // addIcon() {
         //     const avatar = createAvatar(lorelei);
@@ -77,10 +99,13 @@ export default {
                 const svg = avatar.toDataUriSync();
                 return svg
             }
-        }
+        },
+
+        ...mapState(roomStore, ['roomDataState'])
     },
     mounted() {
         // this.data.map(addIcon())
+
     }
 }
 </script>
