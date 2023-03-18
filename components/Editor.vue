@@ -26,7 +26,9 @@ export default {
     },
     methods: {
         changeCodeFromSocket() {
-            let socket = io('http://localhost:4000/')
+            // let socket = io('http://localhost:4000/')
+            const socket = io('https://numerous-sideways-handball.glitch.me/')
+
             socket.on('receive-code', code => {
                 console.log(code.code)
                 this.code = code.code  
