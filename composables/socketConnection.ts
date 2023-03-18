@@ -1,6 +1,8 @@
 import { io } from 'socket.io-client'
 
-const socket = io('http://localhost:4000/')
+// const socket = io('http://localhost:4000/')
+const socket = io('https://numerous-sideways-handball.glitch.me/')
+
 
 
 let joinSocketRoom: any = (room_id: any, user_name: any, room_name: any): any => {
