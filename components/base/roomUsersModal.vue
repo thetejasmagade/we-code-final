@@ -1,6 +1,6 @@
 <template>
     <button @:click="toggleModal()" data-modal-target="default" data-modal-toggle="defaultModal" type="button"
-        class="text-white bg-transparent from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center mr-5">Room
+        class="text-white bg-transparent from-purple-600 to-blue-500 bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center mr-5 py-2">Room
         Joinies <span class="text-red-500">({{ data.length }})</span></button>
 
     <div v-if="showModal"
@@ -23,12 +23,16 @@
                             class="w-full max-w-[180px] max-h-[130px] border rounded-lg shadow bg-gray-800 border-gray-700 p-2"
                             style="position: relative;">
 
-                            <p v-if="!user.isAdmin"
+                            <p v-if="user.isAdmin"
                                 style="position: absolute; top: 0; right: 0; width: 50px; text-align:right; font-size: 14px; color: #00FF00;font-weight: 600;"
                                 class="pr-4">{{ roomDataState.isAdmin ? "You" : "Admin" }}</p>
 
-                            <svg v-if="user.isAdmin && roomDataState.isAdmin" @click="removeUser(user.user)"
-                                xmlns="http://www.w3.org/2000/svg" title="Free Web tutorials" width="24" height="24"
+                                <p v-if="!user.isAdmin && user.user == roomDataState.name"
+                                style="position: absolute; top: 0; right: 0; width: 50px; text-align:right; font-size: 14px; color: #FFFF00;font-weight: 600;"
+                                class="pr-4">You</p>
+
+                            <svg v-if="roomDataState.isAdmin && !user.isAdmin" @click="removeUser(user.user)"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 class="pt-1 cursor-pointer"
                                 style="position: absolute; top: 0; right: 0; text-align:right; color: red;"
                                 viewBox="0 0 24 24">
@@ -37,9 +41,9 @@
                             </svg>
 
                             <div class="h-[80px] w-[80px] mx-auto">
-                                <img :src="addIcon">
+                                <img :src="addIcon" :key="user.user">
                             </div>
-                            <h2 class="text-white py-1">{{ user.user }} Magade</h2>
+                            <h2 class="text-white py-1">{{ user.user }}</h2>
                         </div>
                     </div>
 
@@ -82,20 +86,13 @@ export default {
         removeUser(user) {
             console.log(user)
             this.$bus.$emit("disconnectRoom")
-        }
-
-
-        // addIcon() {
-        //     const avatar = createAvatar(lorelei);
-        //     const svg = avatar.toString();
-        //     console.log(svg)
-        // }
+        },
     },
     computed: {
         addIcon() {
             // let updated = this.data.map()
             for (let i = 0; i < this.data.length; i++) {
-                const avatar = createAvatar(lorelei, { seed: this.data[i].user, randomizeIds: false });
+                const avatar = createAvatar(lorelei, { seed: this.data[Math.floor(Math.random() * this.data.length)].name, randomizeIds: false });
                 const svg = avatar.toDataUriSync();
                 return svg
             }

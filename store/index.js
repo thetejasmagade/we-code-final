@@ -19,8 +19,9 @@ export const roomStore = defineStore('room', {
   state: () => ({
         roomDataState: {
           room_id: '',
-          name: 'Tejas',
-          userName: 'tejas',
+          name: localStorage.getItem('name'),
+          userName: localStorage.getItem('username'),
+          email: localStorage.getItem('email'),
           isAdmin: false,
           connectedWith: false
         }

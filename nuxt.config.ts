@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 
+    ssr: false,
     // Global CSS: https://go.nuxtjs.dev/config-css
     css: [
         "~/static/css/global.css"

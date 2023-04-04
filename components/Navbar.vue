@@ -22,39 +22,46 @@
                     class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center">Create
                     Room</button>
 
-                <BaseRoomUsersModal :data="roomUsers" />
+                    {{ roomDataState.name }}
+                    {{ roomDataState.userName }}
+                    {{ roomDataState.email }}
 
                 <a v-if="roomDataState.isAdmin" :href="'/connection?room_id=' + $route.params.id" target="_blank"
-                    class="text-white">GO TO</a>
-                <p @click="disconnectRoom()" title="Connected" class="cursor-pointer px-3 text-white"
+                    class="text-white py-1">GO TO</a>
+                <p @click="disconnectRoom()" title="Connected" class="cursor-pointer px-3 text-white py-1"
                     v-if="roomDataState.connectedWith">🟢{{ $route.params.id }}</p>
-                <p class="px-3 text-white" v-if="roomDataState.isAdmin">🔖{{ roomDataState.room_id }}</p>
-                <NuxtLink to="#"
+                <p class="px-3 text-white py-1" v-if="roomDataState.isAdmin">🔖{{ roomDataState.room_id }}</p>
+                <BaseRoomUsersModal :data="roomUsers" v-if="($route.path).includes('editors')" />
+                <button v-if="($route.path).includes('editors')" @:click="disconnectRoom()" type="button"
+                    class="text-white bg-transparent from-red-600 to-orange-500 bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center mr-5 py-2">Exit
+                    Room</button>
+
+                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
                     class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">Home
                 </NuxtLink>
-                <NuxtLink to="#"
+                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
                     class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
                     Community
                 </NuxtLink>
-                <NuxtLink to="#" class="block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600">Register
+                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
+                    class="block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600">Register
                 </NuxtLink>
-                <NuxtLink to="#"
+                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
                     class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
                     About</NuxtLink>
-                <NuxtLink to="#"
+                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
                     class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
                     Contact</NuxtLink>
-                <NuxtLink to="#"
+                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
                     class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
                 </NuxtLink>
-
                 <!-- <BaseLanguage /> -->
 
             </nav>
         </header>
         <div class="gradient-line"></div>
 
-        <BaseToast v-if="isToastOpen">{{ toastData }}</BaseToast>
+        <!-- <BaseToast v-if="isToastOpen">{{ toastData }}</BaseToast> -->
     </div>
 </template>
 
@@ -63,11 +70,6 @@
 import { io } from 'socket.io-client'
 import { mapWritableState } from 'pinia'
 import { roomStore } from '~/store/index'
-
-
-definePageMeta({
-    name: "java-room"
-})
 
 
 export default {
@@ -83,8 +85,9 @@ export default {
     },
     methods: {
         async createRoom() {
-            let url_id = (Math.random() + 1).toString(36).substring(2)
-            let room_id = (Math.random() + 1).toString(36).substring(7)
+            let url_id = [...Array(10)].map(() => Math.random().toString(36)[2]).join('');
+            let room_id = [...Array(6)].map(() => Math.random().toString(36)[2]).join('');
+
             this.roomDataState.room_id = room_id
             this.roomDataState.isAdmin = true
             this.roomDataState.connectedWith = true
@@ -124,6 +127,7 @@ export default {
             // console.log(data)
             this.roomUsers = data
         })
+        console.log(localStorage.getItem("email"))
     }
 }
 </script>
