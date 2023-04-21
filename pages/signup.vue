@@ -49,6 +49,7 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { mapWritableState } from 'pinia'
 import { roomStore } from '~/store/index'
+import axios from "axios";
 const nuxtApp = useNuxtApp()
 
 export default {
@@ -62,12 +63,31 @@ export default {
     },
     methods: {
         async registerUser() {
+            let headersList = {
+                "Content-Type": "application/json"
+            }
+            let bodyContent = JSON.stringify({
+                "name": this.name,
+                "email": this.email,
+                "username": this.username
+            });
+
+            let reqOptions = {
+                url: "https://api-generator.retool.com/nlaI9z/data",
+                method: "POST",
+                headers: headersList,
+                data: bodyContent,
+            }
+
             try {
                 const { user } = await createUserWithEmailAndPassword(
                     nuxtApp.$auth,
                     this.email,
                     this.password
                 )
+
+                let response = await axios.request(reqOptions);
+                console.log(response)
 
                 // this.$router.push('/')
             } catch (error) {

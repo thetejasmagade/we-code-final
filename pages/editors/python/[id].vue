@@ -101,13 +101,9 @@ export default {
     data() {
         return {
             editorSettings: {
-                lang: 'java'
+                lang: 'python'
             },
-            code: `class Main {
-    public static void main(String[] args){
-      System.out.println("Hello, World!;");
-    }
-}`,
+            code: `print("Hello, world!")`,
             input: ``,
             output: ``,
             isLoading: false,

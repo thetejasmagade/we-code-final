@@ -101,12 +101,14 @@ export default {
     data() {
         return {
             editorSettings: {
-                lang: 'java'
+                lang: 'go'
             },
-            code: `class Main {
-    public static void main(String[] args){
-      System.out.println("Hello, World!;");
-    }
+            code: `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
 }`,
             input: ``,
             output: ``,

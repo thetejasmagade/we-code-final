@@ -18,44 +18,42 @@
                 </div>
             </div>
             <nav :class="isOpen ? 'block' : 'hidden'" class="px-2 pt-2 pb-4 sm:flex sm:p-0">
-                <button v-if="!roomDataState.room_id" @click="createRoom()" type="button"
-                    class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center">Create
+                <button v-if="!roomDataState.room_id && roomDataState.name" @click="createRoom()" type="button"
+                    class="text-white bg-gradient-to-br py-2 from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center">Create
                     Room</button>
-
-                    {{ roomDataState.name }}
-                    {{ roomDataState.userName }}
-                    {{ roomDataState.email }}
 
                 <a v-if="roomDataState.isAdmin" :href="'/connection?room_id=' + $route.params.id" target="_blank"
                     class="text-white py-1">GO TO</a>
                 <p @click="disconnectRoom()" title="Connected" class="cursor-pointer px-3 text-white py-1"
                     v-if="roomDataState.connectedWith">🟢{{ $route.params.id }}</p>
                 <p class="px-3 text-white py-1" v-if="roomDataState.isAdmin">🔖{{ roomDataState.room_id }}</p>
-                <BaseRoomUsersModal :data="roomUsers" v-if="($route.path).includes('editors')" />
-                <button v-if="($route.path).includes('editors')" @:click="disconnectRoom()" type="button"
+
+                <BaseRoomUsersModal :data="roomUsers" v-if="($route.name).includes('-id')" />
+
+                <button v-if="($route.name).includes('-id')" @:click="disconnectRoom()" type="button"
                     class="text-white bg-transparent from-red-600 to-orange-500 bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center mr-5 py-2">Exit
                     Room</button>
 
-                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
+                <NuxtLink v-if="!($route.name).includes('-id')" to="/"
                     class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">Home
                 </NuxtLink>
-                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
+                <NuxtLink v-if="!($route.name).includes('-id')" to="#"
                     class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
                     Community
                 </NuxtLink>
-                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
-                    class="block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600">Register
-                </NuxtLink>
-                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
+                <NuxtLink v-if="!($route.name).includes('-id')" to="#"
                     class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
                     About</NuxtLink>
-                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
-                    class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
+                <NuxtLink v-if="!($route.name).includes('-id')" to="#"
+                    class="mt-1 block px-2 py-1 mr-2 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
                     Contact</NuxtLink>
-                <NuxtLink v-if="!($route.path).includes('editors')" to="#"
-                    class="mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-gray-600 sm:mt-0 sm:ml-2">
-                </NuxtLink>
                 <!-- <BaseLanguage /> -->
+
+                <BaseProfileImg v-if="roomDataState.name" :name="roomDataState.name" />
+                <NuxtLink to="/login" v-else>
+                    <button type="button"
+                        class="text-white bg-transparent from-green-600 to-blue-500 bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-3 text-center mr-5 py-2">Login/Signup</button>
+                </NuxtLink>
 
             </nav>
         </header>

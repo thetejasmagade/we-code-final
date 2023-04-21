@@ -35,25 +35,38 @@
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { mapWritableState } from 'pinia'
 import { roomStore } from '~/store/index'
+import axios from "axios";
 const nuxtApp = useNuxtApp()
 
 export default {
     data() {
         return {
-            name: [...Array(10)].map(() => Math.random().toString(36)[2]).join(''),
-            username: [...Array(10)].map(() => Math.random().toString(36)[2]).join(''),
+            name: ``,
+            username: ``,
             email: "",
             password: ""
         }
     },
     methods: {
         async signInUser() {
+
+            let headersList = {
+                "Content-Type": "application/json"
+            }
+
             try {
                 const { user } = await signInWithEmailAndPassword(
                     nuxtApp.$auth,
                     this.email,
                     this.password
                 )
+
+                const res = await axios.get(`https://api-generator.retool.com/nlaI9z/data?email=${this.email}`, headersList)
+                this.name = res.data[0].name
+                this.email = res.data[0].email
+                this.username = res.data[0].username
+                // console.log(res)
+
                 // this.$router.push('/')
             } catch (error) {
                 if (error instanceof Error) {

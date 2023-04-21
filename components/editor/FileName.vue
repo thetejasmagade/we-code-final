@@ -1,8 +1,9 @@
 <template>
     <p class="text-lg px-2">
         <span class="border-r-2 border-dashed">&nbsp;📝
-            <span v-if="lang=='java'">Main.java</span>
-            <span v-if="lang=='python'">main.py</span>
+            <span v-if="lang == 'java'">Main.java</span>
+            <span v-if="lang == 'python'">main.py</span>
+            <span v-if="lang == 'go'">main.go</span>
             &nbsp;&nbsp;&nbsp;</span>
     </p>
 </template>
@@ -16,6 +17,4 @@ export default {
 }
 </script>
 
-<style>
-
-</style>
+<style></style>
