@@ -37,8 +37,8 @@ function demo() {
 
 <script>
 import { io } from 'socket.io-client'
-// const socket = io('http://localhost:4000/')
-const socket = io('https://numerous-sideways-handball.glitch.me/')
+const socket = io('http://localhost:4000/')
+// const socket = io('https://numerous-sideways-handball.glitch.me/')
 
 
 export default {
