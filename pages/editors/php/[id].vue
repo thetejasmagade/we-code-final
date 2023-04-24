@@ -1,12 +1,13 @@
 <template>
-    <div class="grid grid-cols-2 divide-x h-screen bg-gray-900 text-gray-200">
+    <div v-if="roomDataState.room_id && ($route.params.id.length == 10 || $route.params.id.length == 11)"
+        class="grid grid-cols-2 divide-x h-screen bg-gray-900 text-gray-200">
         <div class="overflow-y-auto h-full">
             <!-- Black Bar for Editor -->
             <div class="bg-black border-2">
                 <div class="flex">
                     <div class="flex-1 w-64">
                         <!-- Dynamic File Name according to language -->
-                        <EditorFileName :lang="editorSettings.lang" />
+                        <EditorFileName lang="java" />
                     </div>
                     <div class="flex-1 w-32">
                         <span class="float-right pr-8">
@@ -22,7 +23,7 @@
             </div>
             <!-- Black Bar for Editor closes here -->
             <!-- Main Editor -->
-            <Editor :editorSettings=" editorSettings " v-model=" code " code="code" />
+            <Editor :editorSettings=" editorSettings " v-model=" code " code="code" @change-code-on-socket=" updateCode() " />
             <!-- Main Editor Closed Here -->
         </div>
         <div class="h-screen">
@@ -32,6 +33,7 @@
                     <span class="border-r-2 border-dashed">&nbsp;📤 Output&nbsp;&nbsp;&nbsp;</span>
                     <button @click=" output = `` "
                         class="inline-block float-right mr-5 px-2 text-sm my-1 text-black bg-gray-300 rounded hover:bg-gray-500 hover:text-white">CLEAR</button>
+                    <BaseSuggestionModal v-if=" output.includes('error') " :output=" output " :lang=" editorSettings.lang " />
                 </p>
 
             </div>
@@ -51,18 +53,19 @@
                 <div class="flex flex-row">
                     <div v-if=" !isLoading " class="basis-1 pr-3"><span class="text-[#00FF00]">&gt;</span></div>
                     <div class="basis-full">
-                        <pre :class="{ 'text-red-400': output.includes('error') }">{{ output }}</pre>
+                        <pre :class=" { 'text-red-400': output.includes('error') } ">{{ output }}</pre>
                     </div>
                 </div>
+
                 <!-- {{count}}
-          <button @click="add()">hscsahvc</button>
-          {{count}} -->
+        <button @click="add()">hscsahvc</button>
+        {{count}} -->
             </div>
             <!-- Black Bar for Input -->
             <div class="bg-black border-2">
                 <p class="text-lg px-2">
                     <span class="border-r-2 border-dashed">&nbsp;🔤 Input&nbsp;&nbsp;&nbsp;</span>
-                    <button
+                    <button @click=" disconnectRoom() "
                         class="inline-block float-right mr-5 px-2 text-sm my-1 text-black bg-gray-300 rounded hover:bg-gray-500 hover:text-white">CLEAR</button>
                 </p>
             </div>
@@ -73,27 +76,45 @@
             </div>
         </div>
     </div>
+
+    <div v-else>
+        Invalid Route
+    </div>
+
+    <!-- <div v-else>
+        <input type="text" v-model="room_id">
+        <input type="text" v-model="name">
+        <button type="button" @click="roomDataState.room_id = room_id">VERIFY</button>
+    </div> -->
 </template>
-  
+
 <script>
-// import { mapWritableState } from 'pinia'
-// import { useCounterStore } from '~/store/index'
-// import { io } from 'socket.io-client'
+import { mapWritableState } from 'pinia'
+import { roomStore } from '~/store/index'
+import { io } from 'socket.io-client'
+// const socket = io('http://localhost:4000/')
+const socket = io('https://numerous-sideways-handball.glitch.me/')
+
 
 
 export default {
     data() {
         return {
             editorSettings: {
-                lang: 'javascript'
+                lang: 'php'
             },
-            code: `console.log("Hello, World!")`,
+            code: `<?php 
+    echo "Hello, World!" 
+?>`,
             input: ``,
             output: ``,
-            isLoading: false
+            isLoading: false,
+            socket_id: socket.id,
+            room_id: ``,
+            name: '',
+            roomUsers: ``
         }
     },
-
     methods: {
         async sendCodeToRun() {
             this.isLoading = true
@@ -103,35 +124,56 @@ export default {
             })
             this.isLoading = false
         },
-        //   changeCodeSocket() {
-        //     let socket = io('http://localhost:4000/')
-        //     socket.on('connect', () => {
-        //       console.log("connected", socket.id)
-        //       socket.emit('send-code', { code: this.code })
-        //     })
-        //   },
-        //   changeCodeFromSocket() {
-        //     let socket = io('http://localhost:4000/')
-        //     socket.on('receive-code', code => {
-        //       console.log(code)
-        //       this.code = code.code
-        //     })
-        //   }
+
+        updateCode() {
+            socket.emit("send-code", this.code, this.roomDataState.room_id);
+        },
+
+        disconnectRoom() {
+            socket.emit('leave', this.roomDataState.room_id, this.$route.params.id, (message) => {
+                console.log(message);
+            });
+        }
     },
+    mounted() {
+        this.roomDataState.connectedWith = false
+        socket.emit("join-room", this.roomDataState.room_id, this.roomDataState.name, this.roomDataState.userName, this.roomDataState.isAdmin, this.$route.params.id, message => {
+            if (this.roomDataState.room_id) {
+                this.roomDataState.connectedWith = true
+            }
+            console.log(socket.id)
+            console.log(message)
 
-    // mounted() {
-    //   this.changeCodeFromSocket()
-    // }
+            socket.on("receive-code", (code) => {
+                this.code = code;
+            });
+            // }
+        })
 
-    // computed: {
-    //   ...mapWritableState(useCounterStore, ['count'])
-    // },
-    // methods: {
-    //   add(){
-    //     this.count++
-    //   }
-    // }
+        socket.on("receive-code", (code) => {
+            this.code = code;
+        });
+
+        this.$bus.$on("disconnectRoom", () => {
+            this.disconnectRoom()
+        })
+
+        this.$bus.$on("removeUser", () => {
+            socket.emit('removeUserFromRoom', { room: this.roomDataState.room_id, userName: this.roomDataState.userName });
+        })
+
+        // Callig connected Clients list
+        setInterval(() => {
+            // checkConnectedClients(this.roomDataState.room_id, this.$route.params.id)
+            socket.emit("check-clients", this.roomDataState.room_id, this.$route.params.id, (message) => {
+                console.log(message);
+                // this.roomUsers = message.clients
+                this.$bus.$emit("mittRoomUsers", message.clients)
+            })
+        }, 2000)
+    },
+    computed: {
+        ...mapWritableState(roomStore, ['roomDataState'])
+    }
 }
 </script>
-  
-<style></style>

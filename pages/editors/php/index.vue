@@ -51,7 +51,7 @@
                 <div class="flex flex-row">
                     <div v-if=" !isLoading " class="basis-1 pr-3"><span class="text-[#00FF00]">&gt;</span></div>
                     <div class="basis-full">
-                        <pre :class="{ 'text-red-400': output.includes('error') }">{{ output }}</pre>
+                        <pre :class=" { 'text-red-400': output.includes('error') } ">{{ output }}</pre>
                     </div>
                 </div>
                 <!-- {{count}}
@@ -85,9 +85,11 @@ export default {
     data() {
         return {
             editorSettings: {
-                lang: 'javascript'
+                lang: 'php'
             },
-            code: `console.log("Hello, World!")`,
+            code: `<?php 
+    echo "Hello, World!" 
+?>`,
             input: ``,
             output: ``,
             isLoading: false

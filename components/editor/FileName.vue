@@ -5,6 +5,7 @@
             <span v-if="lang == 'python'">main.py</span>
             <span v-if="lang == 'go'">main.go</span>
             <span v-if="lang == 'javascript'">index.js</span>
+            <span v-if="lang == 'php'">main.php</span>
             &nbsp;&nbsp;&nbsp;</span>
     </p>
 </template>

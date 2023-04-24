@@ -1,7 +1,7 @@
 <template>
     <BaseHero />
 
-    <div class="px-24 bg-black grid grid-rows-4 grid-flow-col gap-4 pt-6 place-content-center">
+    <div class="px-24 bg-black grid grid-rows-4 grid-flow-col gap-4 pt-6 place-content-center" id="create-editor-home">
         <div class="grid grid-cols-2 gap-10">
             <div v-for="(lang, i) in data" :key="i"
                 class="flex flex-col items-center border rounded-lg shadow md:flex-row md:max-w-xl border-gray-700 bg-gray-900 hover:bg-gray-800">
@@ -50,6 +50,12 @@ let data = reactive([
         description: "JavaScript is a versatile programming language that is commonly used for building interactive web pages and web applications.  It runs on both the client and server-side.",
         img: `https://api.iconify.design/logos:javascript.svg`,
         link: `/editors/javascript/`
+    },
+    {
+        name: "PHP",
+        description: "PHP is a server-side scripting language designed for web development, widely used for building dynamic websites and web applications. ",
+        img: `https://api.iconify.design/vscode-icons:file-type-php.svg`,
+        link: `/editors/php/`
     },
 ])
 </script>

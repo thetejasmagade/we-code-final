@@ -51,7 +51,7 @@
           <div class="flex flex-row">
             <div v-if="!isLoading" class="basis-1 pr-3"><span class="text-[#00FF00]">&gt;</span></div>
             <div class="basis-full">
-              <pre>{{ output }}</pre>
+              <pre :class="{ 'text-red-400': output.includes('error') }">{{ output }}</pre>
             </div>
           </div>
           <!-- {{count}}
